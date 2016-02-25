@@ -1,9 +1,26 @@
 package com.theironyard;
 
+import spark.ModelAndView;
+import spark.Spark;
+import spark.template.mustache.MustacheTemplateEngine;
+
+import java.util.HashMap;
+
 public class Main {
 
     public static void main(String[] args) {
 
+
+        Spark.init();
+
+        Spark.get(
+                "/",
+                ((request, response) -> {
+                    HashMap m = new HashMap();
+                    return new ModelAndView(m, "login.html");
+                }),
+                new MustacheTemplateEngine()
+        );
 
 
 
@@ -11,6 +28,16 @@ public class Main {
     }
 }
 
+
+//        Create login page.
+//        Display name of current logged in user.
+//        Create page that shows a list of all created users.
+//        Make the user page 10 users long.
+//        Link each user to a page that displays their win/loss information.
+//        If logged in, give the ability to add/edit/delete win/loss information of current user.
+//        Add logout button.
+//        *Save information to a text file.
+//        *Parse saved information.
 
 //        Choose something you'd like to "track" in a web app.
 //        It could be physical objects (beer, books, etc), but doesn't have to be.
