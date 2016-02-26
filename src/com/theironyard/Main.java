@@ -75,8 +75,7 @@ public class Main {
 
 
 
-//        Create login page.
-//        Display name of current logged in user.
+
 //        Create page that shows a list of all created users.
 //        Make the user page 10 users long.
 //        Link each user to a page that displays their win/loss information.

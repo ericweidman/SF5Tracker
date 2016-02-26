@@ -1,8 +1,16 @@
 <html>
 <body>
-Welcome {{name}}!
 <form action="/logout" method="post">
     <button type="submit">Logout</button>
 </form>
+
+Welcome {{name}}!
+
+<ol>
+{{#name}}
+{{name}}
+{{/name}}
+</ol>
+
 </body>
 </html>
