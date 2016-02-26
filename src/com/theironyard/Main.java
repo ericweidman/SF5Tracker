@@ -22,6 +22,16 @@ public class Main {
                 new MustacheTemplateEngine()
         );
 
+        Spark.post(
+                "create-user",
+                ((request, response) -> {
+                    String userName = request.queryParams("userName");
+                    String userPass = request.queryParams("userPass");
+                    response.redirect("/");
+                    return "";
+                })
+        );
+
 
 
 
