@@ -6,20 +6,19 @@ import spark.ModelAndView;
 import spark.Session;
 import spark.Spark;
 import spark.template.mustache.MustacheTemplateEngine;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
 public class Main {
     static HashMap<String, User> users = new HashMap<>();
+   static ArrayList<User> allUsers = new ArrayList<>();
 
     public static void main(String[] args) throws FileNotFoundException {
-
-
 
         Spark.init();
 
@@ -32,34 +31,35 @@ public class Main {
                         return new ModelAndView(m, "login.html");
                     } else {
                         m.put("name", user.userName);
-                        saveInfo();
+                            }
                         return new ModelAndView(m, "home.html");
-                    }
+
                 }),
                 new MustacheTemplateEngine()
         );
         Spark.post(
                 "create-user",
                 ((request, response) -> {
-                    String userName = request.queryParams("userName");
-                    String userPass = request.queryParams("userPass");
-                    User user = users.get(userName);
-                    if (userName.equals("") || userPass.equals("")) {
-                        response.redirect("/");
-                    } else if (user == null) {
-                        user = new User(userName, userPass);
-                        users.put(userName, user);
-                        user.userPass = userPass;
-                        Session session = request.session();
-                        session.attribute("userName", userName);
-                        response.redirect("/");
-                    } else if (userPass.equals(user.userPass)) {
-                        response.redirect("/");
-                        Session session = request.session();
-                        session.attribute("userName", userName);
-                    } else {
-                        Spark.halt(403);
-                    }
+                            String userName = request.queryParams("userName");
+                            String userPass = request.queryParams("userPass");
+                            User user = users.get(userName);
+                            if (userName.equals("") || userPass.equals("")) {
+                                response.redirect("/");
+                            } else if (user == null) {
+                                user = new User(userName, userPass);
+                                users.put(userName, user);
+                                user.userPass = userPass;
+                                Session session = request.session();
+                                session.attribute("userName", userName);
+                            } else if (userPass.equals(user.userPass)) {
+                                response.redirect("/");
+                                Session session = request.session();
+                                session.attribute("userName", userName);
+                            } else {
+                                Spark.halt(403);
+                            }
+                    response.redirect("/");
+
                     return "";
                 })
         );
@@ -73,7 +73,6 @@ public class Main {
                 })
         );
     }
-
 
     static User getUserFromSession(Session session) {
         String name = session.attribute("userName");
@@ -92,7 +91,6 @@ public class Main {
     }
 
     public static User loadInfo() throws FileNotFoundException {
-
 
         File f = new File("user.json");
         Scanner s = new Scanner(f);
