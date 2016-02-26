@@ -1,16 +1,24 @@
 package com.theironyard;
 
+import jodd.json.JsonParser;
+import jodd.json.JsonSerializer;
 import spark.ModelAndView;
 import spark.Session;
 import spark.Spark;
 import spark.template.mustache.MustacheTemplateEngine;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Scanner;
 
 public class Main {
     static HashMap<String, User> users = new HashMap<>();
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
+
 
 
         Spark.init();
@@ -22,9 +30,9 @@ public class Main {
                     HashMap m = new HashMap();
                     if (user == null) {
                         return new ModelAndView(m, "login.html");
-                    }
-                    else{
+                    } else {
                         m.put("name", user.userName);
+                        saveInfo();
                         return new ModelAndView(m, "home.html");
                     }
                 }),
@@ -36,21 +44,20 @@ public class Main {
                     String userName = request.queryParams("userName");
                     String userPass = request.queryParams("userPass");
                     User user = users.get(userName);
-                    if(userName.equals("")|| userPass.equals("")) {
+                    if (userName.equals("") || userPass.equals("")) {
                         response.redirect("/");
-                    }
-                    else if(user == null){
+                    } else if (user == null) {
                         user = new User(userName, userPass);
                         users.put(userName, user);
                         user.userPass = userPass;
                         Session session = request.session();
                         session.attribute("userName", userName);
                         response.redirect("/");
-                    } else if (userPass.equals(user.userPass)){
+                    } else if (userPass.equals(user.userPass)) {
                         response.redirect("/");
                         Session session = request.session();
                         session.attribute("userName", userName);
-                    }else{
+                    } else {
                         Spark.halt(403);
                     }
                     return "";
@@ -65,13 +72,41 @@ public class Main {
                     return "";
                 })
         );
-
     }
-    static User getUserFromSession(Session session){
+
+
+    static User getUserFromSession(Session session) {
         String name = session.attribute("userName");
         return users.get(name);
     }
+
+    public static void saveInfo() throws IOException {
+
+        JsonSerializer s = new JsonSerializer();
+        String json = s.include("*").serialize(users);
+
+        File f = new File("user.json");
+        FileWriter fw = new FileWriter(f);
+        fw.write(json);
+        fw.close();
+    }
+
+    public static User loadInfo() throws FileNotFoundException {
+
+
+        File f = new File("user.json");
+        Scanner s = new Scanner(f);
+        s.useDelimiter("\\Z");
+        String contents = s.next();
+        JsonParser p = new JsonParser();
+        return p.parse(contents, User.class);
+
+    }
 }
+
+
+
+
 
 
 
