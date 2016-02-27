@@ -11,13 +11,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
 public class Main {
     static HashMap<String, User> users = new HashMap<>();
-    static ArrayList<User> allUsers = new ArrayList<>();
+    //static ArrayList<User> allUsers = new ArrayList<>();
 
     public static void main(String[] args) throws FileNotFoundException {
 
@@ -32,6 +31,8 @@ public class Main {
                         return new ModelAndView(m, "login.html");
                     } else {
                         m.put("name", user.userName);
+                        m.put("stats", user.stats);
+
                     }
                     return new ModelAndView(m, "home.html");
 
@@ -74,17 +75,34 @@ public class Main {
                 })
         );
         Spark.post(
-                "create-record",
+                "/create-record",
                 ((request, response) -> {
-                    getUserFromSession(request.session());
+                    User user = getUserFromSession(request.session());
+                    String userCharacter = request.queryParams("Character");
+                    String opponentCharacter = request.queryParams("opponentCharacter");
+                    String winLoss = request.queryParams("Win/Loss");
+                    if (userCharacter == null || opponentCharacter == null || winLoss == null) {
+                        throw new Exception("Didn't receive all parameters.");
+                    }
+                    Stat stat = new Stat(userCharacter, opponentCharacter, winLoss);
+                    user.stats.add(stat);
 
                     response.redirect("/");
                     return "";
                 })
         );
-
-
+        Spark.post(
+                "/delete",
+                ((request, response) -> {
+                    User user = getUserFromSession(request.session());
+                    int number = Integer.valueOf(request.queryParams("userDelete"));
+                    user.stats.remove(number - 1);
+                    response.redirect("/");
+                    return "";
+                })
+        );
     }
+
 
     static User getUserFromSession(Session session) {
         String name = session.attribute("userName");
