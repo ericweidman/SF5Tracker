@@ -6,11 +6,53 @@
 
 Welcome {{name}}!
 
-<ol>
-{{#allUsers}}
-<li>{{userName}}</li>
-{{/allUsers}}
-</ol>
+<form action="create-record" method="post">
+<select name="Character">
+    <option selected disabled>Character</option>
+    <option value="Ryu">Ryu</option>
+    <option value="Ken">Ken</option>
+    <option value="Nash">Nash</option>
+    <option value="Chun-Li">Chun-Li</option>
+    <option value="M.Bison">M.Bison</option>
+    <option value="Laura">Laura</option>
+    <option value="F.A.N.G.">F.A.N.G.</option>
+    <option value="Cammy">Cammy</option>
+    <option value="Birdie">Birdie</option>
+    <option value="Necalli">Necalli</option>
+    <option value="Vega">Vega</option>
+    <option value="R.Mika">R.Mika</option>
+    <option value="Rashid">Rashid</option>
+    <option value="Karin">Karin</option>
+    <option value="Zangief">Zangief</option>
+    <option value="Dhalsim">Dhalsim</option>
+</select>
+    <select name="OpponentCharacter">
+        <option selected disabled>Opponent Character</option>
+        <option value="Ryu">Ryu</option>
+        <option value="Ken">Ken</option>
+        <option value="Nash">Nash</option>
+        <option value="Chun-Li">Chun-Li</option>
+        <option value="M.Bison">M.Bison</option>
+        <option value="Laura">Laura</option>
+        <option value="F.A.N.G.">F.A.N.G.</option>
+        <option value="Cammy">Cammy</option>
+        <option value="Birdie">Birdie</option>
+        <option value="Necalli">Necalli</option>
+        <option value="Vega">Vega</option>
+        <option value="R.Mika">R.Mika</option>
+        <option value="Rashid">Rashid</option>
+        <option value="Karin">Karin</option>
+        <option value="Zangief">Zangief</option>
+        <option value="Dhalsim">Dhalsim</option>
+    </select>
+<select name="Win/Loss">
+    <option selected disabled>Win/Loss?</option>
+    <option value="Win">Win</option>
+    <option value="Loss">Loss</option>
+</select>
+<button type="submit">Submit</button>
+</form>
+
 
 </body>
 </html>

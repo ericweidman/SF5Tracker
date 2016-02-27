@@ -6,6 +6,7 @@ import spark.ModelAndView;
 import spark.Session;
 import spark.Spark;
 import spark.template.mustache.MustacheTemplateEngine;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -16,7 +17,7 @@ import java.util.Scanner;
 
 public class Main {
     static HashMap<String, User> users = new HashMap<>();
-   static ArrayList<User> allUsers = new ArrayList<>();
+    static ArrayList<User> allUsers = new ArrayList<>();
 
     public static void main(String[] args) throws FileNotFoundException {
 
@@ -31,8 +32,8 @@ public class Main {
                         return new ModelAndView(m, "login.html");
                     } else {
                         m.put("name", user.userName);
-                            }
-                        return new ModelAndView(m, "home.html");
+                    }
+                    return new ModelAndView(m, "home.html");
 
                 }),
                 new MustacheTemplateEngine()
@@ -40,24 +41,24 @@ public class Main {
         Spark.post(
                 "create-user",
                 ((request, response) -> {
-                            String userName = request.queryParams("userName");
-                            String userPass = request.queryParams("userPass");
-                            User user = users.get(userName);
-                            if (userName.equals("") || userPass.equals("")) {
-                                response.redirect("/");
-                            } else if (user == null) {
-                                user = new User(userName, userPass);
-                                users.put(userName, user);
-                                user.userPass = userPass;
-                                Session session = request.session();
-                                session.attribute("userName", userName);
-                            } else if (userPass.equals(user.userPass)) {
-                                response.redirect("/");
-                                Session session = request.session();
-                                session.attribute("userName", userName);
-                            } else {
-                                Spark.halt(403);
-                            }
+                    String userName = request.queryParams("userName");
+                    String userPass = request.queryParams("userPass");
+                    User user = users.get(userName);
+                    if (userName.equals("") || userPass.equals("")) {
+                        response.redirect("/");
+                    } else if (user == null) {
+                        user = new User(userName, userPass);
+                        users.put(userName, user);
+                        user.userPass = userPass;
+                        Session session = request.session();
+                        session.attribute("userName", userName);
+                    } else if (userPass.equals(user.userPass)) {
+                        response.redirect("/");
+                        Session session = request.session();
+                        session.attribute("userName", userName);
+                    } else {
+                        Spark.halt(403);
+                    }
                     response.redirect("/");
 
                     return "";
@@ -72,6 +73,17 @@ public class Main {
                     return "";
                 })
         );
+        Spark.post(
+                "create-record",
+                ((request, response) -> {
+                    getUserFromSession(request.session());
+
+                    response.redirect("/");
+                    return "";
+                })
+        );
+
+
     }
 
     static User getUserFromSession(Session session) {
@@ -101,12 +113,6 @@ public class Main {
 
     }
 }
-
-
-
-
-
-
 
 
 //        Create page that shows a list of all created users.
