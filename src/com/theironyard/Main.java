@@ -16,7 +16,6 @@ import java.util.Scanner;
 
 public class Main {
     static HashMap<String, User> users = new HashMap<>();
-    //static ArrayList<User> allUsers = new ArrayList<>();
 
     public static void main(String[] args) throws FileNotFoundException {
 
@@ -101,6 +100,25 @@ public class Main {
                     return "";
                 })
         );
+
+        Spark.post(
+                "/edit",
+                ((request, response) -> {
+                    User user = getUserFromSession(request.session());
+                    int number = Integer.valueOf(request.queryParams("userEdit"));
+                    String userCharEdit = request.queryParams("editChar");
+                    String userOppEdit = request.queryParams("editOpponentCharacter");
+                    String userWinEdit = request.queryParams("editWin/Loss");
+                    if(userCharEdit == null || userOppEdit == null || userWinEdit == null){
+                        response.redirect("/");
+                    }
+                    Stat statEdit = new Stat(userCharEdit, userOppEdit, userWinEdit);
+                    user.stats.set(number - 1, statEdit);
+                    response.redirect("/");
+                    return "";
+                })
+        );
+
     }
 
 
