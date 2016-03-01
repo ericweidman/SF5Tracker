@@ -127,27 +127,7 @@ public class Main {
         return users.get(name);
     }
 
-    public static void saveInfo() throws IOException {
 
-        JsonSerializer s = new JsonSerializer();
-        String json = s.include("*").serialize(users);
-
-        File f = new File("user.json");
-        FileWriter fw = new FileWriter(f);
-        fw.write(json);
-        fw.close();
-    }
-
-    public static User loadInfo() throws FileNotFoundException {
-
-        File f = new File("user.json");
-        Scanner s = new Scanner(f);
-        s.useDelimiter("\\Z");
-        String contents = s.next();
-        JsonParser p = new JsonParser();
-        return p.parse(contents, User.class);
-
-    }
 }
 
 
