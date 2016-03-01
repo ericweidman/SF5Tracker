@@ -64,6 +64,18 @@ public class MainTest {
         endConnection(conn);
         assertTrue(update.size() == 1);
     }
+
+    @Test
+    public void testDelete() throws SQLException {
+        Connection conn = startConnection();
+        Main.insertUser(conn, "Eric", "12345");
+        User james = Main.selectUser(conn, "Eric");
+        Main.insertStat(conn, james.id, "Nash", "Ryu", "Loss");
+        Stat loss = Main.selectStat(conn, 1);
+        Main.deleteStat(conn, 1);
+        assertTrue(loss == null);
+
+    }
 }
 
 

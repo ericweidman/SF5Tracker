@@ -30,9 +30,6 @@ public class Main {
                     for(Stat stat : stats){
                             update.add(stat);
                         }
-                   // }
-
-
                     if (user == null) {
                         return new ModelAndView(m, "login.html");
                     } else {
@@ -95,35 +92,34 @@ public class Main {
                     return "";
                 })
         );
-        Spark.post(
-                "/delete",
-                ((request, response) -> {
-                    User user = getUserFromSession(request.session());
-                    int number = Integer.valueOf(request.queryParams("userDelete"));
-                    user.stats.remove(number - 1);
-                    response.redirect("/");
-                    return "";
-                })
-        );
+//        Spark.post(
+//                "/delete",
+//                ((request, response) -> {
+//                    int number = Integer.valueOf(request.queryParams("userDelete"));
+//                    deleteStat(conn, number);
+//                    response.redirect("/");
+//                    return "";
+//                })
+//        );
 
-        Spark.post(
-                "/edit",
-                ((request, response) -> {
-                    User user = getUserFromSession(request.session());
-                    int number = Integer.valueOf(request.queryParams("userEdit"));
-                    String userCharEdit = request.queryParams("editChar");
-                    String userOppEdit = request.queryParams("editOpponentCharacter");
-                    String userWinEdit = request.queryParams("editWin/Loss");
-                    if(userCharEdit == null || userOppEdit == null || userWinEdit == null){
-                        response.redirect("/");
-                    }
-                    Stat statEdit = new Stat(userCharEdit, userOppEdit, userWinEdit);
-                    user.stats.set(number - 1, statEdit);
-                    response.redirect("/");
-                    return "";
-                })
-        );
-
+//        Spark.post(
+//                "/edit",
+//                ((request, response) -> {
+//                    User user = getUserFromSession(request.session());
+//                    int number = Integer.valueOf(request.queryParams("userEdit"));
+//                    String userCharEdit = request.queryParams("editChar");
+//                    String userOppEdit = request.queryParams("editOpponentCharacter");
+//                    String userWinEdit = request.queryParams("editWin/Loss");
+//                    if(userCharEdit == null || userOppEdit == null || userWinEdit == null){
+//                        response.redirect("/");
+//                    }
+//                    Stat statEdit = new Stat(userCharEdit, userOppEdit, userWinEdit);
+//                    user.stats.set(number - 1, statEdit);
+//                    response.redirect("/");
+//                    return "";
+//                })
+//        );
+        conn.close();
     }
 
 
@@ -195,6 +191,11 @@ public class Main {
         }
         return stats;
 
+    }
+    public static void deleteStat(Connection conn, int id) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("DELETE FROM stats WHERE id = ?");
+        stmt.setInt(1, id);
+        stmt.execute();
     }
 
 
