@@ -92,34 +92,32 @@ public class Main {
                     return "";
                 })
         );
-//        Spark.post(
-//                "/delete",
-//                ((request, response) -> {
-//                    int number = Integer.valueOf(request.queryParams("userDelete"));
-//                    deleteStat(conn, number);
-//                    response.redirect("/");
-//                    return "";
-//                })
-//        );
+        Spark.post(
+                "/delete",
+                ((request, response) -> {
+                    int number = Integer.valueOf(request.queryParams("userDelete"));
+                    deleteStat(conn, number);
+                    response.redirect("/");
+                    return "";
+                })
+        );
 
-//        Spark.post(
-//                "/edit",
-//                ((request, response) -> {
-//                    User user = getUserFromSession(request.session());
-//                    int number = Integer.valueOf(request.queryParams("userEdit"));
-//                    String userCharEdit = request.queryParams("editChar");
-//                    String userOppEdit = request.queryParams("editOpponentCharacter");
-//                    String userWinEdit = request.queryParams("editWin/Loss");
-//                    if(userCharEdit == null || userOppEdit == null || userWinEdit == null){
-//                        response.redirect("/");
-//                    }
-//                    Stat statEdit = new Stat(userCharEdit, userOppEdit, userWinEdit);
-//                    user.stats.set(number - 1, statEdit);
-//                    response.redirect("/");
-//                    return "";
-//                })
-//        );
-        conn.close();
+        Spark.post(
+                "/edit",
+                ((request, response) -> {
+                    int userSelect = Integer.valueOf(request.queryParams("userEdit"));
+                    String userCharEdit = request.queryParams("editChar");
+                    String userOppEdit = request.queryParams("editOpponentCharacter");
+                    String userWinEdit = request.queryParams("editWin/Loss");
+                    if(userCharEdit == null || userOppEdit == null || userWinEdit == null){
+                        response.redirect("/");
+                    }
+                    Stat stat = new Stat(userCharEdit, userOppEdit, userWinEdit);
+                    updateStat(conn, userSelect,stat);
+                    response.redirect("/");
+                    return "";
+                })
+        );
     }
 
 
@@ -179,7 +177,7 @@ public class Main {
     public static ArrayList<Stat> selectStats(Connection conn, int id) throws SQLException {
         ArrayList<Stat> stats = new ArrayList<>();
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stats INNER JOIN users ON " +
-                "stats.user_id = users.id WHERE stats.id = ?");
+                "stats.user_id = users.id WHERE stats.user_id = ?");
         stmt.setInt(1, id);
         ResultSet results = stmt.executeQuery();
         while(results.next()){
@@ -192,11 +190,18 @@ public class Main {
         return stats;
 
     }
-    public static void deleteStat(Connection conn, int id) throws SQLException {
+     static void deleteStat(Connection conn, int id) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("DELETE FROM stats WHERE id = ?");
         stmt.setInt(1, id);
         stmt.execute();
     }
-
+    static void updateStat(Connection conn, int id, Stat stat) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("UPDATE stats SET id = ?, user_character = ?, opponent_character = ?, win_loss = ?");
+        stmt.setInt(1, id);
+        stmt.setString(2, stat.userCharacter);
+        stmt.setString(3, stat.opponentCharacter);
+        stmt.setString(4, stat.winLoss);
+        stmt.execute();
+    }
 
 }
