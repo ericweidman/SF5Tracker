@@ -11,7 +11,10 @@ import java.util.HashMap;
 
 
 public class Main {
+
+
     static HashMap<String, User> users = new HashMap<>();
+    static ArrayList<Stat> stats = new ArrayList<>();
 
     public static void main(String[] args) throws SQLException {
         Connection conn = DriverManager.getConnection("jdbc:h2:./main");
@@ -23,11 +26,18 @@ public class Main {
                 ((request, response) -> {
                     User user = getUserFromSession(request.session());
                     HashMap m = new HashMap();
+                    ArrayList<Stat> update = new ArrayList<>();
+                    for(Stat stat : stats){
+                            update.add(stat);
+                        }
+                   // }
+
+
                     if (user == null) {
                         return new ModelAndView(m, "login.html");
                     } else {
                         m.put("name", user.userName);
-                        m.put("stats", user.stats);
+                        m.put("stats", update);
 
                     }
                     return new ModelAndView(m, "home.html");
@@ -57,7 +67,6 @@ public class Main {
                         Spark.halt(403);
                     }
                     response.redirect("/");
-
                     return "";
                 })
         );
@@ -73,15 +82,14 @@ public class Main {
         Spark.post(
                 "/create-record",
                 ((request, response) -> {
-                    User user = getUserFromSession(request.session());
                     String userCharacter = request.queryParams("Character");
                     String opponentCharacter = request.queryParams("opponentCharacter");
                     String winLoss = request.queryParams("Win/Loss");
                     if (userCharacter == null || opponentCharacter == null || winLoss == null) {
                         throw new Exception("Didn't receive all parameters.");
                     }
-                    Stat stat = new Stat(userCharacter, opponentCharacter, winLoss);
-                    user.stats.add(stat);
+                    Stat stat = new Stat(stats.size(), userCharacter, opponentCharacter, winLoss);
+                    stats.add(stat);
 
                     response.redirect("/");
                     return "";

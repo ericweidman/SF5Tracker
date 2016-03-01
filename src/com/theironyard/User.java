@@ -9,7 +9,7 @@ public class User {
     int id;
     String userName;
     String userPass;
-    ArrayList<Stat> stats = new ArrayList<>();
+    //ArrayList<Stat> stats = new ArrayList<>();
 
     public String getUserPass() {
         return userPass;
