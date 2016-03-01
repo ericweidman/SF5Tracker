@@ -1,24 +1,20 @@
 package com.theironyard;
 
-import jodd.json.JsonParser;
-import jodd.json.JsonSerializer;
 import spark.ModelAndView;
 import spark.Session;
 import spark.Spark;
 import spark.template.mustache.MustacheTemplateEngine;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.sql.*;
 import java.util.HashMap;
-import java.util.Scanner;
+
 
 public class Main {
     static HashMap<String, User> users = new HashMap<>();
 
-    public static void main(String[] args) throws FileNotFoundException {
-
+    public static void main(String[] args) throws SQLException {
+        Connection conn = DriverManager.getConnection("jdbc:h2:./main");
+        createTables(conn);
         Spark.init();
 
         Spark.get(
@@ -128,37 +124,28 @@ public class Main {
     }
 
 
+    public static void createTables(Connection conn) throws SQLException {
+        Statement stmt = conn.createStatement();
+        stmt.execute("CREATE TABLE IF NOT EXISTS users (id IDENTITY, name VARCHAR, password VARCHAR)");
+        stmt.execute("CREATE TABLE IF NOT EXISTS stats (id IDENTITY, user_character VARCHAR, opponent_character VARCHAR," +
+                "win_loss VARCHAR )");
+    }
+    public static void insertUser(Connection conn, String name, String password) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO users VALUES (NULL, ?, ?)");
+        stmt.setString(1, name);
+        stmt.setString(2, password);
+        stmt.execute();
+    }
+    public static User selectUser(Connection conn, String name) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE name = ?");
+        stmt.setString(1, name);
+        ResultSet results = stmt.executeQuery();
+        if(results.next()){
+            int id = results.getInt("id");
+            String password = results.getString("Password");
+            return new User(id, name, password);
+
+        }
+        return null;
+    }
 }
-
-
-//        Create page that shows a list of all created users.
-//        Make the user page 10 users long.
-//        Link each user to a page that displays their win/loss information.
-//        If logged in, give the ability to add/edit/delete win/loss information of current user.
-//        Add logout button.
-//        *Save information to a text file.
-//        *Parse saved information.
-
-//        Choose something you'd like to "track" in a web app.
-//        It could be physical objects (beer, books, etc), but doesn't have to be.
-
-//        User authentication
-//        If not logged in, show a login form at the top
-//        (it can double as your create account form, like in the ForumWeb project).
-
-//        If logged in, display the username and a logout button at the top.
-//        Create: If logged in, display a form to create a new entry.
-
-//        Read: Whether logged in or not,
-//        list whatever entries were created by the users.
-
-//        Update: If logged in, show an edit link next to the entries created by that user.
-//        Display the edit form on a new page and use a hidden field to specify which item to edit.
-
-//        Delete: If logged in, show a delete button next to the entries created by that user.
-//        Clicking it should delete the item and refresh the page.
-//        Use a hidden field to specify which item to delete.
-
-//        Compile the project as a JAR file and upload it to the "Releases" section of your repo.
-//        Optional: Add paging to your list of entries.
-//        Optional: Add CSS (served statically via a public folder).

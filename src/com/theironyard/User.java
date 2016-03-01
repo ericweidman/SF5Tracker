@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created by ericweidman on 2/25/16.
  */
 public class User {
-
+    int id;
     String userName;
     String userPass;
     ArrayList<Stat> stats = new ArrayList<>();
@@ -28,6 +28,12 @@ public class User {
     }
 
     public User(String userName, String userPass) {
+        this.userName = userName;
+        this.userPass = userPass;
+    }
+
+    public User(int id, String userName, String userPass) {
+        this.id = id;
         this.userName = userName;
         this.userPass = userPass;
 
