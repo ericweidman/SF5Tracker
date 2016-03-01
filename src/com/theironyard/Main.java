@@ -6,6 +6,7 @@ import spark.Spark;
 import spark.template.mustache.MustacheTemplateEngine;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -127,7 +128,7 @@ public class Main {
     public static void createTables(Connection conn) throws SQLException {
         Statement stmt = conn.createStatement();
         stmt.execute("CREATE TABLE IF NOT EXISTS users (id IDENTITY, name VARCHAR, password VARCHAR)");
-        stmt.execute("CREATE TABLE IF NOT EXISTS stats (id IDENTITY, user_character VARCHAR, opponent_character VARCHAR," +
+        stmt.execute("CREATE TABLE IF NOT EXISTS stats (id IDENTITY, user_id INT, user_character VARCHAR, opponent_character VARCHAR," +
                 "win_loss VARCHAR )");
     }
     public static void insertUser(Connection conn, String name, String password) throws SQLException {
@@ -148,4 +149,45 @@ public class Main {
         }
         return null;
     }
+    public static void insertStat(Connection conn, int userId, String userChar, String oppChar, String winLoss) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO stats VALUES (NULL, ?, ?, ?, ?)");
+        stmt.setInt(1, userId);
+        stmt.setString(2, userChar);
+        stmt.setString(3, oppChar);
+        stmt.setString(4, winLoss);
+        stmt.execute();
+
+    }
+    public static Stat selectStat(Connection conn, int id) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stats INNER JOIN users ON " +
+        "stats.user_id = users.id WHERE stats.id = ?");
+        stmt.setInt(1, id);
+        ResultSet results = stmt.executeQuery();
+        if(results.next()){
+            String userChar = results.getString("stats.user_character");
+            String oppChar = results.getString("stats.opponent_character");
+            String winLoss = results.getString("stats.win_loss");
+            return new Stat(id, userChar, oppChar, winLoss);
+        }
+        return null;
+
+    }
+    public static ArrayList<Stat> selectStats(Connection conn, int id) throws SQLException {
+        ArrayList<Stat> stats = new ArrayList<>();
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM stats INNER JOIN users ON " +
+                "stats.user_id = users.id WHERE stats.id = ?");
+        stmt.setInt(1, id);
+        ResultSet results = stmt.executeQuery();
+        while(results.next()){
+            String userChar = results.getString("stats.user_character");
+            String oppChar = results.getString("stats.opponent_character");
+            String winLoss = results.getString("stats.win_loss");
+            Stat stat = new Stat(id, userChar, oppChar, winLoss);
+            stats.add(stat);
+        }
+        return stats;
+
+    }
+
+
 }
